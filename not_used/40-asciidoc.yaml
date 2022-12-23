@@ -1,0 +1,39 @@
+# Generated from https://git.alpinelinux.org/aports/plain/main/asciidoc/APKBUILD
+package:
+    name: asciidoc
+    version: 10.2.0
+    epoch: 0
+    description: Text based documentation
+    target-architecture:
+        - all
+    copyright:
+        - paths:
+            - '*'
+          attestation: TODO
+          license: GPL-2.0-or-later AND GPL-1.0-or-later
+environment:
+    contents:
+        packages:
+            - busybox
+            - ca-certificates-bundle
+            - build-base
+            - automake
+            - autoconf
+            - py3-setuptools
+            - python3
+            - libxml2-utils
+            - docbook-xsl
+pipeline:
+    - uses: fetch
+      with:
+        expected-sha256: 237b2ba5c35c0ae7ccd4cd44ebf1d87c20b2695dae01798954416d492ef7fa0e
+        uri: https://github.com/asciidoc-py/asciidoc-py/releases/download/${{package.version}}/asciidoc-${{package.version}}.tar.gz
+    - uses: autoconf/configure
+    - uses: autoconf/make
+    - uses: autoconf/make-install
+    - uses: strip
+subpackages:
+    - name: asciidoc-doc
+      pipeline:
+        - uses: split/manpages
+      description: asciidoc manpages

@@ -1,0 +1,50 @@
+# Generated from https://git.alpinelinux.org/aports/plain/main/gtest/APKBUILD
+package:
+    name: gtest
+    version: 1.12.1
+    epoch: 0
+    description: Google Test - C++ testing utility based on the xUnit framework (like JUnit)
+    target-architecture:
+        - all
+    copyright:
+        - paths:
+            - '*'
+          attestation: TODO
+          license: BSD-3-Clause
+environment:
+    contents:
+        packages:
+            - busybox
+            - ca-certificates-bundle
+            - build-base
+            - automake
+            - autoconf
+            - gtest
+            - gmock
+            - cmake
+            - python3-dev
+            - samurai
+            - gtest-dev
+            - gmock-dev
+pipeline:
+    - uses: fetch
+      with:
+        expected-sha256: 81964fe578e9bd7c94dfdb09c8e4d6e6759e19967e397dbea48d1c10e45d0df2
+        uri: https://github.com/google/googletest/archive/refs/tags/release-${{package.version}}.tar.gz
+    - uses: autoconf/configure
+    - uses: autoconf/make
+    - uses: autoconf/make-install
+    - uses: strip
+subpackages:
+    - name: gtest-dev
+      pipeline:
+        - uses: split/dev
+      dependencies:
+        runtime:
+            - gtest
+            - gtest
+            - gmock
+      description: gtest dev
+    - name: gmock
+      pipeline:
+        - runs: FIXME

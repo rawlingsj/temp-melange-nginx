@@ -1,0 +1,297 @@
+# Generated from https://git.alpinelinux.org/aports/plain/main/nginx/APKBUILD
+package:
+  name: nginx
+  version: 1.22.1
+  epoch: 0
+  description: HTTP and reverse proxy server (stable version)
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+        - "*"
+      attestation: TODO
+      license: BSD-2-Clause
+environment:
+  contents:
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - automake
+      - autoconf
+      - brotli-dev
+      - gd-dev
+      - geoip-dev
+      - libmaxminddb-dev
+      - libxml2-dev
+      - libxslt-dev
+      - openssl-dev
+      - pcre-dev
+      - perl-dev
+      - pkgconf
+      - zeromq-dev
+      - zlib-dev
+      - luajit-dev
+      - tree
+pipeline:
+  - uses: fetch
+    with:
+      expected-sha256: 9ebb333a9e82b952acd3e2b4aeb1d4ff6406f72491bab6cd9fe69f0dea737f31
+      uri: https://nginx.org/download/nginx-${{package.version}}.tar.gz
+  # - uses: fetch
+  #   with:
+  #     expected-sha256: f67adc2cf8ea1dd4fc884cb445c15a4055833cfa30aa9243c84c54fee0734b13
+  #     uri: https://hg.nginx.org/nginx-tests/archive/29f4d48b5b31.tar.gz
+  # - uses: fetch
+  #   with:
+  #     expected-sha256: 4dac9cbf071e5a7dfe135b4d87e20112d207fcbf5fb620854af8dab44ec3e7bd
+  #     uri: https://hg.nginx.org/njs/archive/0.7.7.tar.gz
+  # - uses: fetch
+  #   with:
+  #     expected-sha256: df3d833dc608c4743716541ef04600616ab98d98becee7bbb818559b263e49d2
+  #     uri: https://github.com/arut/nginx-dav-ext-module/pull/56.patch
+  # - uses: fetch
+  #   with:
+  #     expected-sha256: 770e3e5562f564ccea8b5c33ad3f6171bbfcb987d34e6b457ed715d43551e501
+  #     uri: https://github.com/arut/nginx-dav-ext-module/commit/bbf93f75ca58657fb0f8376b0898f854f13cef91.patch
+  - name: prepare
+    runs: |
+      ls -al 
+      tree .
+
+  - name: configure
+    runs: |
+      export LUAJIT_LIB="$(pkgconf --variable=libdir luajit)"
+      export LUAJIT_INC="$(pkgconf --variable=includedir luajit)"
+
+      ./configure \
+          --prefix=/var/lib/nginx \
+          --sbin-path=/usr/sbin/nginx \
+          --modules-path=/$_modules_dir \
+          --conf-path=/etc/nginx/nginx.conf \
+          --pid-path=/run/nginx/nginx.pid \
+          --lock-path=/run/nginx/nginx.lock \
+          --http-client-body-temp-path=/var/lib/nginx/tmp/client_body \
+          --http-proxy-temp-path=/var/lib/nginx/tmp/proxy \
+          --http-fastcgi-temp-path=/var/lib/nginx/tmp/fastcgi \
+          --http-uwsgi-temp-path=/var/lib/nginx/tmp/uwsgi \
+          --http-scgi-temp-path=/var/lib/nginx/tmp/scgi \
+          --with-perl_modules_path=/usr/lib/perl5/vendor_perl \
+          \
+          --user=nginx \
+          --group=nginx \
+          --with-threads \
+          --with-file-aio \
+          \
+          --without-pcre2 \
+          \
+          --with-http_ssl_module \
+          --with-http_v2_module \
+          --with-http_realip_module \
+          --with-http_addition_module \
+          --with-http_xslt_module=dynamic \
+          --with-http_image_filter_module=dynamic \
+          --with-http_geoip_module=dynamic \
+          --with-http_sub_module \
+          --with-http_dav_module \
+          --with-http_flv_module \
+          --with-http_mp4_module \
+          --with-http_gunzip_module \
+          --with-http_gzip_static_module \
+          --with-http_auth_request_module \
+          --with-http_random_index_module \
+          --with-http_secure_link_module \
+          --with-http_degradation_module \
+          --with-http_slice_module \
+          --with-http_stub_status_module \
+          --with-http_perl_module=dynamic \
+          --with-mail=dynamic \
+          --with-mail_ssl_module \
+          --with-stream=dynamic \
+          --with-stream_ssl_module \
+          --with-stream_realip_module \
+          --with-stream_geoip_module=dynamic \
+          --with-stream_ssl_preread_module
+
+  - runs: |
+      # mv objs objs-debug
+
+      # make clean
+
+  - runs: |
+      make DESTDIR=${{targets.destdir}} install
+      chown root:root ${{targets.destdir}}/usr/sbin/nginx
+
+# subpackages:
+#   - name: nginx-debug
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-doc
+#     pipeline:
+#       - uses: split/manpages
+#     description: nginx manpages
+#   - name: nginx-openrc
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-vim
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-geoip
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-image-filter
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-perl
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-xslt-filter
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-mail
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-stream
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-stream-geoip
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-js
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-stream-js
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-devel-kit
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-accounting
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-array-var
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-brotli
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-cache-purge
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-cookie-flag
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-dav-ext
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-echo
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-encrypted-session
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-fancyindex
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-geoip2
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-stream-geoip2
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-headers-more
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-log-zmq
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-lua
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-lua-upstream
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-naxsi
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-nchan
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-redis2
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-set-misc
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-shibboleth
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-untar
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-upload
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-upload-progress
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-upstream-fair
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-upstream-jdomain
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-vod
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-vts
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-http-zip
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
+#   - name: nginx-mod-rtmp
+#     pipeline:
+#       - uses: split/FIXME
+#     description: nginx FIXME
