@@ -2,3 +2,6 @@ packages/
 .DS_Store
 *.rsa
 *.rsa.pub
+*.tar
+*.cdx
+*.spdx.json

@@ -122,6 +122,18 @@ pipeline:
       make DESTDIR=${{targets.destdir}} install
       chown root:root ${{targets.destdir}}/usr/sbin/nginx
 
+      # install -Dm644 nginx.conf ${{targets.destdir}}/etc/nginx/nginx.conf
+      # install -dm755 ${{targets.destdir}}/etc/nginx/http.d ${{targets.destdir}}/etc/nginx/modules
+
+      # install -Dm644 nginx.confd ${{targets.destdir}}/etc/conf.d/nginx
+      # install -Dm644 nginx.logrotate ${{targets.destdir}}/etc/logrotate.d/nginx
+
+      # install -dm750 -o nginx -g nginx ${{targets.destdir}}/var/lib/nginx
+      # install -dm700 -o nginx -g nginx ${{targets.destdir}}/var/lib/nginx/tmp
+      # install -dm755 -g nginx ${{targets.destdir}}/var/www/localhost/htdocs
+
+      # install -Dm644 default.conf ${{targets.destdir}}/usr/share/nginx/http-default_server.conf
+
 # subpackages:
 #   - name: nginx-debug
 #     pipeline:

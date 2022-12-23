@@ -1,3 +1,9 @@
+# generate a local key to work with
+
+```sh
+docker run --rm -v "${PWD}":/work cgr.dev/chainguard/melange keygen local-melange.rsa
+```
+
 # prime a local arm apk cache
 
 to prime a local cache of arm apks..
